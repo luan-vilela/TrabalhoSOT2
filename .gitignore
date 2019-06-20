@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#ignore customizados
+.vscode
+main
+main.exe
