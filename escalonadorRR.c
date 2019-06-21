@@ -27,13 +27,15 @@ void * _RR(void *node){
         
         //_despachante
         _despachante(newProcess);
-        
+
+        printf("time id:%d - %d\n",newProcess->id, getTime());
         auxTimer = getTime();
         while(getTime()-auxTimer < tq && newProcess->tb > 0){ 
             newProcess->tb -= 1;
             newProcess->tc += 1;
             espera();
         }
+        printf("time %d\n", getTime());
         //void downMemory(int tp, int id);
         if(newProcess->tb <= 0){
             printf("Processo id:%d terminou sua execução.\n", newProcess->id);

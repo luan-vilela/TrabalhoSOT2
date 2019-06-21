@@ -9,27 +9,31 @@
 
 void _despachante(process *fila){
     // sorteia uma idpage
-    int idpage = rand() % fila->np;  
+    int idpage = rand() % fila->np;
 
 
    // sem_post(&S);
     
 }
 
+// Retorn a 1 caso tenha falha de página
 int bitV(int idpage, Pagetable *pagetable){
-
+    int controle = 0;
 
     for(int i = 0; i < idpage; i++){
         pagetable = pagetable->next;
     }
-
+    // Falha de página
     if(pagetable->validador == false){
-        pagetable->validador = true;
-        pagetable->idframe = 100;
-        pagetable->referencia = true;
-        pagetable = L;
-        return 1;
+        controle = 1;
     }
-    
-    return 0;
+
+
+    return controle;
 }
+
+
+    // while (nframe.idProcess != NULL){
+    //     printf("%d ", nframe.idProcess->id);
+    //     nframe.idProcess = nframe.idProcess->next;
+    // }

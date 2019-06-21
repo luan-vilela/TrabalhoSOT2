@@ -44,8 +44,6 @@ typedef struct page{
     struct page *next;
 }Pagetable;
 
-
-
 //argumentos passos no pthreads
 typedef struct arg_struct {
     int seed;
@@ -55,11 +53,24 @@ typedef struct arg_struct {
     process **filaProntos;
 }arguments;
 
-//Memória
-int nframe;
+//Registrador de memória
+typedef struct reg{
+    int id;
+    struct reg *next;
+}quadro;
+
+// Memória primária do sistema
+struct memory{
+    int nframe;
+    quadro *idProcess;
+};
+
+struct memory nframe;
+
 // Time
 int myTime;
-Pagetable *pagetable;
+//Pagetable *pagetable;
+
 
 //declarando um semáforo
 // Garante que a thread criação de processos vai iníciar somente após 
@@ -74,16 +85,18 @@ void *_createProcess(void *node);
 void *_createInitialProcess(void *node);
 void createNode(int id, int tp, int tc, int tb, process **node);
 Pagetable * createPage(int n, Pagetable *L);
+void createListFrame(int numFrame);
 
 void * _RR(void *node);
 void _despachante(process *fila);
+int testaBit(int idpage, Pagetable *page);
 int bitV(int idpage, Pagetable *pagetable);
 
 void updateTime();
 void restartTime();
 void espera();
 
-int _pager(process *node, int local);
+int _pager(int idpage, process *fila);
 
 // uso geral
 void ** moveProcess(process **local, process ** destino, process *processo);
@@ -100,7 +113,7 @@ process * disconnectBrothers(process *node);
 void _removeProcess(int id, process **fila);
 
 
-int _pager(process *node, int local);
+
 int getTime();
 
 int swapon(int local);

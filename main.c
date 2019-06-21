@@ -102,9 +102,6 @@ int main(){
 
     printf("Término da observação\n");
 
-
-
-
     printf("fila de entrada\n");
     imprimeFila(fila_entrada);
     pthread_join(*input_de_processos, NULL);

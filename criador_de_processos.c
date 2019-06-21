@@ -17,12 +17,12 @@
  * */
 void *_createProcess(void *node){
     process * processoAux;
-    //atual = alloca_node();
     int n = 0;
-
-    // Só entra aqui após pelo menos 1 processo ser criado na fila de entrada
+    //cria listFrame
+    createListFrame(((arguments*)node)->n);
+    
+    // Só entra aqui após pelo menos 1 processo ser criado digitado
     sem_wait(&S_processos);
-
     while( ((arguments*)node)->filaEntrada != NULL && ((arguments*)node)->n > n){
         // Verifica se existe algum processo que esteja no tempo de criação
 
@@ -84,7 +84,6 @@ void createNode(int id, int np, int tc, int tb, process **node){
 // N é o endereço da memória física
 Pagetable * createPage(int n, Pagetable *L){
     int i;
-
     for(i = 0; i < n; i++){
         Pagetable *newPage;
         newPage = (Pagetable *)malloc(sizeof(Pagetable));
@@ -101,3 +100,19 @@ Pagetable * createPage(int n, Pagetable *L){
     return L;
 }
 
+void createListFrame(int numFrame){
+    nframe.nframe = numFrame;
+    nframe.idProcess = NULL;
+
+    int i;
+    for(i = 0; i < numFrame; i++){
+        quadro *newPage;
+        newPage = (quadro *)malloc(sizeof(quadro));
+        newPage->id = -1;
+        newPage->next = NULL;
+
+        if(nframe.idProcess != NULL)
+            newPage->next = nframe.idProcess;
+        nframe.idProcess = newPage;
+    }    
+}
