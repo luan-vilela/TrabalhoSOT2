@@ -11,6 +11,8 @@ void _despachante(process *fila){
     // sorteia uma idpage
     int idpage = rand() % fila->np;
 
+    int x = bitV(idpage, fila->pagetable);
+
 
    // sem_post(&S);
     
@@ -20,6 +22,7 @@ void _despachante(process *fila){
 int bitV(int idpage, Pagetable *pagetable){
     int controle = 0;
 
+    printf("==== %d ==== \n", pagetable->idpage);
     for(int i = 0; i < idpage; i++){
         pagetable = pagetable->next;
     }
