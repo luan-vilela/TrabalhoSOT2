@@ -13,7 +13,7 @@ void updateTime(){
     // Inicia timer em 0
     restartTime();
     while (1){
-        sleep(1);
+        espera();
         myTime++;
 
     }

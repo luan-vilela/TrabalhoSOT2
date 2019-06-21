@@ -31,12 +31,15 @@
 void imprimeFila(process *L){
     while(L!= NULL){
         printf("processo id: %d criado. Detalhes: \t id | \t np | \t tc | \t tb\n ", L->id);
-        printf("\t\t\t\t\t %d \t %d \t %d \t %d\n", L->id, L->np, L->tc, L->tb);
+        printf("\t\t\t\t\t %d \t %d \t %d\n", L->id, L->tc, L->tb);
         //Aguarda 1 segundo
         //sleep(1);
         L = L->next;
     }
 }
+
+
+
 /************************************************
  * FIM DEBUG
 ************************************************/
@@ -49,13 +52,11 @@ int main(){
     // filas
     process *fila_entrada = NULL;
     process *fila_prontos = NULL;
-    // hd apenas ids
-    
+
     arguments *args;
     pthread_t *criador_de_processos;
     pthread_t *input_de_processos;
-    // pthread_t *escalonador_FCFS;
-    // pthread_t *escalonador_RR;
+    pthread_t *escalonador_RR;
     pthread_t *Timer;
     // pthread_t *p;
 
@@ -71,11 +72,13 @@ int main(){
     args = (arguments *) malloc(sizeof(arguments));
     args->filaEntrada = &fila_entrada;
     args->filaProntos = &fila_prontos; 
-    
+
     // Entrada de dados
     // Recebe tmp, n, tq
-    scanf("%d %d %d %d", &args->seed, &args->frame, &args->n, &args->tq);
-
+    scanf("%d %d %d %d", &args->seed, &nframe, &args->n, &args->tq);
+    
+    // Seta seed
+    srand(args->seed);
 
 
     // Cria thread Timer
@@ -91,16 +94,12 @@ int main(){
     criador_de_processos = (pthread_t *) malloc(sizeof(* criador_de_processos));
     pthread_create(criador_de_processos, NULL, (void *) _createProcess, (void *) args);
 
+    // Cria thread Escalonador
+    escalonador_RR = (pthread_t *) malloc(sizeof(* escalonador_RR));
+    pthread_create(escalonador_RR, NULL, (void *) _RR, (void *) args);
 
     
 
-    /**
-     * CRIA THREAD FCFS
-    */  
- 
-     /**
-     * CRIA THREAD Round-Robin
-    */
     printf("Término da observação\n");
 
 
@@ -113,10 +112,11 @@ int main(){
     printf("\n\n\n\n");
     
     pthread_join(*criador_de_processos, NULL);
+    pthread_join(*escalonador_RR, NULL);
     //imprime fila de entrada
     printf("fila de prontos\n");
     imprimeFila(fila_prontos);
-    
+
     return 0;
 
     // NÃO PODE USAR JOIN NO THREAD TIMER

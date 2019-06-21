@@ -30,36 +30,42 @@ typedef struct processId{
     int np;
     int tc;
     int tb;
+    struct page *pagetable;
     struct processId *next;
     struct processId *previous;
 }process;
 
+//Registrador de memória
+typedef struct page{
+    int idpage;
+    int idframe;
+    bool validador;
+    bool referencia;
+    struct page *next;
+}Pagetable;
+
+
+
 //argumentos passos no pthreads
 typedef struct arg_struct {
     int seed;
-    int frame;
     int n;
     int tq;
     process **filaEntrada;
     process **filaProntos;
 }arguments;
 
-//Registrador de memória
-typedef struct page{
-    int id;
-    int endereco;
-    bool validador;
-    bool referencia;
-    struct page *next;
-}pagetable;
-
+//Memória
+int nframe;
+// Time
 int myTime;
+Pagetable *pagetable;
 
 //declarando um semáforo
 // Garante que a thread criação de processos vai iníciar somente após 
 // pelo menos 1 processo ser iniciado
 sem_t S_processos;
-
+sem_t S_escalonador;
 
 /****************************************************************
  *   AQUI FICA O CABEÇALHO DE TODOS OS MÉTODOS
@@ -67,10 +73,17 @@ sem_t S_processos;
 void *_createProcess(void *node);
 void *_createInitialProcess(void *node);
 void createNode(int id, int tp, int tc, int tb, process **node);
+Pagetable * createPage(int n, Pagetable *L);
+
+void * _RR(void *node);
+void _despachante(process *fila);
+int bitV(int idpage, Pagetable *pagetable);
 
 void updateTime();
 void restartTime();
 void espera();
+
+int _pager(process *node, int local);
 
 // uso geral
 void ** moveProcess(process **local, process ** destino, process *processo);
@@ -79,19 +92,21 @@ process * getProcess(process **fila);
 process * disconnectBrothers(process *node);
 
 
-void * _fcfs(void *node);
-void * _RR(void *node);
+
+
+
+
 
 void _removeProcess(int id, process **fila);
 
 
-int _swapper(process *node, int local);
+int _pager(process *node, int local);
 int getTime();
 
 int swapon(int local);
 int findProcess(int id, int local);
 process * getProcessToRR(process **fila);
-void _despachante(process *fila);
+
 
 /****************************************************************
  *   MÉTODOS QUE PRECISÃO SER IMPLEMENTADOS

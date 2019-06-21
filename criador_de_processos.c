@@ -10,7 +10,6 @@
 // biblioteca sleep
 #include <unistd.h>
 
-
 /**
  * Cria processos dinamicamente na memória
  * Devolve um struct do tipo process ordenado
@@ -35,28 +34,27 @@ void *_createProcess(void *node){
                 moveProcess( ((arguments*)node)->filaEntrada, ((arguments*)node)->filaProntos, processoAux);
                 printf("%s - Criador de processos criou o processo %d e o colocou na fila de prontos\n", __TIME__, processoAux->id);
                 n++;
+                sem_post(&S_escalonador);
             }
         }
 
     }
 
 }
-
 // Criador de fila de entrada
 // Fica aguardando entradas n
 void *_createInitialProcess(void *node){
+
     int i;
     // variáveis para criação do processo
     int id, np, tc, tb;
     for(i = 0; i < ((arguments*)node)->n; i++){
         scanf("%d %d %d %d", &id, &np, &tc, &tb);
         createNode(id,np,tc,tb,((arguments*)node)->filaEntrada);
-        // sem_post(&S_processos);
+        sem_post(&S_processos);
     }
-            sem_post(&S_processos);
+
 }
-
-
 /**
  * Aloca processos em uma fila
 */
@@ -66,6 +64,8 @@ void createNode(int id, int np, int tc, int tb, process **node){
     
     newProcess->id = id;
     newProcess->np = np;
+    newProcess->pagetable = NULL;
+    newProcess->pagetable = createPage(np, newProcess->pagetable);
     newProcess->tc = tc;
     newProcess->tb = tb;
 
@@ -78,5 +78,26 @@ void createNode(int id, int np, int tc, int tb, process **node){
         (*node)->previous = newProcess;
         *node = newProcess;
     }
+}
+
+// cria tabela de página
+// N é o endereço da memória física
+Pagetable * createPage(int n, Pagetable *L){
+    int i;
+
+    for(i = 0; i < n; i++){
+        Pagetable *newPage;
+        newPage = (Pagetable *)malloc(sizeof(Pagetable));
+        newPage->idpage = n - (1 + i);
+        newPage->idframe = -1;
+        newPage->validador = false;
+        newPage->validador = false;
+        
+        // empilha page table
+        if(L != NULL)
+            newPage->next = L;
+        L = newPage;
+    }
+    return L;
 }
 
